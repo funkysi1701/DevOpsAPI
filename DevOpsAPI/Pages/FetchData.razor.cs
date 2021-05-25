@@ -79,13 +79,22 @@ namespace DevOpsAPI.Pages
             {
                 return string.Empty;
             }
-            else return
-                BuildRelease
-                .OrderByDescending(x => x.Queue)
-                .Take(50)
-                .Where(x => x.Finish == null && !x.Release)
-                .Max(x => x.Wait)
-                .ToString(@"hh\:mm\:ss");
+            else
+            {
+                try
+                {
+                    return BuildRelease
+                            .OrderByDescending(x => x.Queue)
+                            .Take(50)
+                            .Where(x => x.Finish == null && !x.Release)
+                            .Max(x => x.Wait)
+                            .ToString(@"hh\:mm\:ss");
+                }
+                catch (Exception e)
+                {
+                    return string.Empty;
+                }
+            }
         }
 
         protected string CountNumberOfAgents()
