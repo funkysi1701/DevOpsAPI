@@ -1,0 +1,57 @@
+﻿@page "/"
+@inherits FetchDataBase
+
+<h1>DevOps Builds</h1>
+@TestString
+<br />
+@MaxWaitTime
+<br />
+@NumberOfAgents
+<br />
+<button @onclick="@(async () => await LoadData())">Reload Data</button>
+@if (BuildRelease == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table" id="results" style="width:100%">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Build Name</th>
+                <th>Build/Release</th>
+                <th>Queue Time</th>
+                <th>Start Time</th>
+                <th>Finish Time</th>
+                <th>Wait Time</th>
+                <th>Build Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var build in BuildRelease.OrderByDescending(x => x.Queue).Take(150))
+            {
+                <tr>
+                    <td class="@GetRowState(build)"></td>
+
+                    <td class="@GetRowState(build)"><a href="@build.URL">@build.Name</a></td>
+
+                    <td class="@GetRowState(build)">@(build.Release ? "Release" : "Build")</td>
+
+                    <td class="@GetRowState(build)">@build.Queue?.AddHours(offset).ToString("dd/MM/yyyy HH:mm:ss")</td>
+
+                    <td class="@GetRowState(build)">@build.Start?.AddHours(offset).ToString("dd/MM/yyyy HH:mm:ss")</td>
+
+                    <td class="@GetRowState(build)">@build.Finish?.AddHours(offset).ToString("dd/MM/yyyy HH:mm:ss")</td>
+
+                    <td class="@GetRowState(build)">@(build.Wait.ToString(@"hh\:mm\:ss")) </td>
+
+                    <td class="@GetRowState(build)">@(build.Build.ToString(@"hh\:mm\:ss") != "00:00:00" ? build.Build.ToString(@"hh\:mm\:ss") : string.Empty) </td>
+
+                    <td class="@GetRowState(build)">@build.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
