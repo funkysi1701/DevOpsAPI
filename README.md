@@ -1,6 +1,6 @@
 # DevOpsAPI
 
-Uses the Azure Dev Ops API to get info about Builds
+Uses the Azure Dev Ops API to get info about Builds (and Releases)
 
 appsettings.json needs configuring for this to work.
 
