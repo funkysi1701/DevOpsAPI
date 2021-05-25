@@ -225,7 +225,7 @@ namespace DevOpsAPI.Pages
             {
                 timer = new Timer
                 {
-                    Interval = 60000
+                    Interval = Config.GetValue<int>("Reload")
                 };
                 timer.Elapsed += OnTimerInterval;
                 timer.AutoReset = true;
