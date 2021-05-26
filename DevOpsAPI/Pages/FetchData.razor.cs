@@ -90,7 +90,7 @@ namespace DevOpsAPI.Pages
                             .Max(x => x.Wait)
                             .ToString(@"hh\:mm\:ss");
                 }
-                catch (Exception e)
+                catch
                 {
                     return string.Empty;
                 }
