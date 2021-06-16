@@ -29,6 +29,7 @@ namespace DevOpsAPI.Pages
         protected string TestString { get; set; }
         protected string MaxWaitTime { get; set; }
         protected string NumberOfAgents { get; set; }
+        protected string NumberWaiting { get; set; }
         private Timer timer;
         protected int offset;
 
@@ -69,6 +70,7 @@ namespace DevOpsAPI.Pages
             await BuildLoad();
 
             await ReleaseLoad();
+            NumberWaiting = $"Number of Waiting Jobs {CountWaitingJobs()}";
             NumberOfAgents = $"Number of Running Jobs {CountNumberOfAgents()}";
             MaxWaitTime = $"Max Wait Time {CalcMaxWaitTime()}";
         }
@@ -103,6 +105,15 @@ namespace DevOpsAPI.Pages
                 .OrderByDescending(x => x.Queue)
                 .Take(50)
                 .Count(x => x.Start != null && x.Finish == null && !x.Release)
+                .ToString();
+        }
+
+        protected string CountWaitingJobs()
+        {
+            return BuildRelease
+                .OrderByDescending(x => x.Queue)
+                .Take(50)
+                .Count(x => x.Start == null && x.Finish == null && !x.Release)
                 .ToString();
         }
 
