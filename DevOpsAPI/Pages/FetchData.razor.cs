@@ -161,22 +161,27 @@ namespace DevOpsAPI.Pages
                     RemoveBuildRelease(b);
 
                     Builds.Add(b);
-                    var br = new BuildRelease
-                    {
-                        Id = b.Id,
-                        Name = $"{b.Project.Name} / {b.BuildNumber}",
-                        Queue = b.QueueTime,
-                        Start = b.StartTime,
-                        Finish = b.FinishTime,
-                        Wait = ((b.StartTime ?? DateTime.UtcNow) - b.QueueTime).Value,
-                        Build = (b.FinishTime ?? DateTime.UtcNow) - (b.StartTime ?? DateTime.UtcNow),
-                        Status = b.Result.ToString(),
-                        Release = false,
-                        URL = $"{Config.GetSection("DevOpsURL").Value}/{proj.Name}/_build/results?buildId={b.Id}&view=results"
-                    };
+                    BuildRelease br = GetBuildRelease(proj, b);
                     BuildRelease.Add(br);
                 }
             }
+        }
+
+        private BuildRelease GetBuildRelease(TeamProjectReference proj, Build build)
+        {
+            return new BuildRelease
+            {
+                Id = build.Id,
+                Name = $"{build.Project.Name} / {build.BuildNumber}",
+                Queue = build.QueueTime,
+                Start = build.StartTime,
+                Finish = build.FinishTime,
+                Wait = ((build.StartTime ?? DateTime.UtcNow) - build.QueueTime).Value,
+                Build = (build.FinishTime ?? DateTime.UtcNow) - (build.StartTime ?? DateTime.UtcNow),
+                Status = build.Result.ToString(),
+                Release = false,
+                URL = $"{Config.GetSection("DevOpsURL").Value}/{proj.Name}/_build/results?buildId={build.Id}&view=results"
+            };
         }
 
         private void RemoveBuilds(Build b)
@@ -253,13 +258,13 @@ namespace DevOpsAPI.Pages
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(true).GetAwaiter();
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual async Task Dispose(bool disposing)
         {
-            JSRuntime.InvokeAsync<object>("TestDataTablesRemove", "#results");
+            await JSRuntime.InvokeAsync<object>("TestDataTablesRemove", "#results");
             timer?.Dispose();
         }
     }
