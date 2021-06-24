@@ -122,31 +122,36 @@ namespace DevOpsAPI.Pages
             foreach (var proj in projects)
             {
                 var rs = await relclient.GetDeploymentsAsync(proj.Name).ConfigureAwait(false);
-                foreach (var r in rs)
+                foreach (var release in rs)
                 {
-                    var old = Releases.FirstOrDefault(x => x.Id == r.Id);
-                    var oldbr = BuildRelease.FirstOrDefault(x => x.Id == r.Id);
+                    var old = Releases.FirstOrDefault(x => x.Id == release.Id);
+                    var oldbr = BuildRelease.FirstOrDefault(x => x.Id == release.Id);
                     Releases.Remove(old);
                     BuildRelease.Remove(oldbr);
-                    r.ProjectReference = new();
-                    r.ProjectReference.Name = proj.Name;
-                    Releases.Add(r);
-                    var br = new BuildRelease
-                    {
-                        Id = r.Id,
-                        Name = $"{r.ProjectReference.Name} / {r.Release.Name} / {r.ReleaseEnvironmentReference.Name} / {r.ReleaseDefinitionReference.Name}",
-                        Queue = r.QueuedOn == DateTime.MinValue ? null : r.QueuedOn,
-                        Start = r.StartedOn == DateTime.MinValue ? null : r.StartedOn,
-                        Finish = r.CompletedOn == DateTime.MinValue ? null : r.CompletedOn,
-                        Wait = ((r.StartedOn == DateTime.MinValue ? DateTime.UtcNow : r.StartedOn) - r.QueuedOn),
-                        Build = (r.CompletedOn == DateTime.MinValue ? DateTime.UtcNow : r.CompletedOn) - (r.StartedOn == DateTime.MinValue ? DateTime.UtcNow : r.StartedOn),
-                        Status = $"{r.OperationStatus} {r.DeploymentStatus}",
-                        Release = true,
-                        URL = $"{Config.GetSection("DevOpsURL").Value}/{proj.Name}/_releaseProgress?_a=release-pipeline-progress&releaseId={r.Release.Id}"
-                    };
+                    release.ProjectReference = new();
+                    release.ProjectReference.Name = proj.Name;
+                    Releases.Add(release);
+                    BuildRelease br = GetRelease(proj, release);
                     BuildRelease.Add(br);
                 }
             }
+        }
+
+        private BuildRelease GetRelease(TeamProjectReference proj, Deployment release)
+        {
+            return new BuildRelease
+            {
+                Id = release.Id,
+                Name = $"{release.ProjectReference.Name} / {release.Release.Name} / {release.ReleaseEnvironmentReference.Name} / {release.ReleaseDefinitionReference.Name}",
+                Queue = release.QueuedOn == DateTime.MinValue ? null : release.QueuedOn,
+                Start = release.StartedOn == DateTime.MinValue ? null : release.StartedOn,
+                Finish = release.CompletedOn == DateTime.MinValue ? null : release.CompletedOn,
+                Wait = ((release.StartedOn == DateTime.MinValue ? DateTime.UtcNow : release.StartedOn) - release.QueuedOn),
+                Build = (release.CompletedOn == DateTime.MinValue ? DateTime.UtcNow : release.CompletedOn) - (release.StartedOn == DateTime.MinValue ? DateTime.UtcNow : release.StartedOn),
+                Status = $"{release.OperationStatus} {release.DeploymentStatus}",
+                Release = true,
+                URL = $"{Config.GetSection("DevOpsURL").Value}/{proj.Name}/_releaseProgress?_a=release-pipeline-progress&releaseId={release.Release.Id}"
+            };
         }
 
         protected async Task BuildLoad()
@@ -161,13 +166,13 @@ namespace DevOpsAPI.Pages
                     RemoveBuildRelease(b);
 
                     Builds.Add(b);
-                    BuildRelease br = GetBuildRelease(proj, b);
+                    BuildRelease br = GetBuild(proj, b);
                     BuildRelease.Add(br);
                 }
             }
         }
 
-        private BuildRelease GetBuildRelease(TeamProjectReference proj, Build build)
+        private BuildRelease GetBuild(TeamProjectReference proj, Build build)
         {
             return new BuildRelease
             {
