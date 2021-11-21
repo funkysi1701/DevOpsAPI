@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
     <UserSecretsId>aspnet-DevOpsAPI-B607D6B2-E80D-4A0A-90E8-BBD54F8AD79E</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
     <ApplicationInsightsResourceId>/subscriptions/59bdf6e9-f925-45bf-ae95-18c6d959f688/resourcegroups/clouds-insights/providers/Microsoft.Insights/components/DevOpsAPI</ApplicationInsightsResourceId>
