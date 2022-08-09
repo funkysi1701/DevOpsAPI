@@ -21,7 +21,7 @@ steps:
         version: '5.x'
         includePreviewVersions: true
 
-    - task: NuGetToolInstaller@0
+    - task: NuGetToolInstaller@0.208.1
       displayName: 'NuGetToolInstaller'
       inputs:
         versionSpec: 4.4.1
