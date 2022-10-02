@@ -51,7 +51,7 @@ steps:
         projects: 'DevOpsAPI/DevOpsAPI.csproj'
         arguments: '--no-restore --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --runtime win-x64 /p:SourceRevisionId=$(Build.SourceVersion)'        
 
-    - task: PublishBuildArtifacts@1.200.0
+    - task: PublishBuildArtifacts@1.211.0
       displayName: 'Publish DevOpsAPI'
       inputs:
         PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
