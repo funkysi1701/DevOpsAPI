@@ -34,7 +34,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet tool install --global dotnet-coverage
-          dotnet-sonarscanner begin /k:"funkysi1701_Metrics" /o:"funkysi1701" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          dotnet-sonarscanner begin /k:"funkysi1701_DevOpsAPI" /o:"funkysi1701" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
           dotnet build --no-incremental DevOpsAPI.sln
           dotnet-coverage collect 'dotnet test DevOpsAPI.sln' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
