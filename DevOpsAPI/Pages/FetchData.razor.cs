@@ -40,8 +40,8 @@ namespace DevOpsAPI.Pages
                 var creds = new VssBasicCredential(string.Empty, Config.GetSection("DevOpsPAT").Value);
 
                 var connection = new VssConnection(new Uri(Config.GetSection("DevOpsURL").Value), creds);
-                var projectclient = await connection.GetClientAsync<ProjectHttpClient>();
-                projects = await projectclient.GetProjects();
+                var projectClient = await connection.GetClientAsync<ProjectHttpClient>();
+                projects = await projectClient.GetProjects();
                 buildclient = await connection.GetClientAsync<BuildHttpClient>();
                 relclient = await connection.GetClientAsync<ReleaseHttpClient>();
                 if (Builds == null)
