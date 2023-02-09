@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using System.Net.Http.Headers;
@@ -25,75 +24,7 @@ namespace DevOpsAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-
-                    options.Prompt = "select_account";
-
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        var tokenAcquisition = context.HttpContext.RequestServices
-                            .GetRequiredService<ITokenAcquisition>();
-
-                        var graphClient = new GraphServiceClient(
-                            new DelegateAuthenticationProvider(async (request) =>
-                            {
-                                var token = await tokenAcquisition
-                                    .GetAccessTokenForUserAsync(GraphConstants.Scopes, user: context.Principal);
-                                request.Headers.Authorization =
-                                    new AuthenticationHeaderValue("Bearer", token);
-                            })
-                        );
-
-                        // Get user information from Graph
-                        var user = await graphClient.Me.Request()
-                            .Select(u => new
-                            {
-                                u.DisplayName,
-                                u.Mail,
-                                u.UserPrincipalName,
-                                u.MailboxSettings
-                            })
-                            .GetAsync();
-
-                        context.Principal.AddUserGraphInfo(user);
-
-                        // Get the user's photo
-                        // If the user doesn't have a photo, this throws
-                        try
-                        {
-                            var photo = await graphClient.Me
-                                .Photos["48x48"]
-                                .Content
-                                .Request()
-                                .GetAsync();
-
-                            context.Principal.AddUserGraphPhoto(photo);
-                        }
-                        catch (ServiceException ex)
-                        {
-                            if (ex.IsMatch("ErrorItemNotFound") ||
-                                ex.IsMatch("ConsumerPhotoIsNotSupported"))
-                            {
-                                context.Principal.AddUserGraphPhoto(null);
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                    };
-                })
-                .EnableTokenAcquisitionToCallDownstreamApi(options =>
-                {
-                    Configuration.Bind("AzureAd", options);
-                }, GraphConstants.Scopes)
-                .AddMicrosoftGraph(options =>
-                {
-                    options.Scopes = string.Join(' ', GraphConstants.Scopes);
-                })
-                .AddInMemoryTokenCaches();
+               .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
@@ -109,7 +40,7 @@ namespace DevOpsAPI
                 .AddMicrosoftIdentityConsentHandler()
                 .AddCircuitOptions(opt => { opt.DetailedErrors = true; });
 
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

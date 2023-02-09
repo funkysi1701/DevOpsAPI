@@ -35,20 +35,23 @@ namespace DevOpsAPI.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            var creds = new VssBasicCredential(string.Empty, Config.GetSection("DevOpsPAT").Value);
-
-            var connection = new VssConnection(new Uri(Config.GetSection("DevOpsURL").Value), creds);
-            var projectclient = await connection.GetClientAsync<ProjectHttpClient>();
-            projects = await projectclient.GetProjects();
-            buildclient = await connection.GetClientAsync<BuildHttpClient>();
-            relclient = await connection.GetClientAsync<ReleaseHttpClient>();
-            if (Builds == null)
+            if(Config.GetSection("DevOpsPAT").Value != string.Empty && Config.GetSection("DevOpsURL").Value != string.Empty)
             {
-                Builds = new();
+                var creds = new VssBasicCredential(string.Empty, Config.GetSection("DevOpsPAT").Value);
+
+                var connection = new VssConnection(new Uri(Config.GetSection("DevOpsURL").Value), creds);
+                var projectclient = await connection.GetClientAsync<ProjectHttpClient>();
+                projects = await projectclient.GetProjects();
+                buildclient = await connection.GetClientAsync<BuildHttpClient>();
+                relclient = await connection.GetClientAsync<ReleaseHttpClient>();
+                if (Builds == null)
+                {
+                    Builds = new();
+                }
+                if (BuildRelease == null) { BuildRelease = new(); }
+                if (Releases == null) { Releases = new(); }
+                await LoadData();
             }
-            if (BuildRelease == null) { BuildRelease = new(); }
-            if (Releases == null) { Releases = new(); }
-            await LoadData();
         }
 
         protected async Task GetLocalTime()
@@ -66,13 +69,19 @@ namespace DevOpsAPI.Pages
         {
             await GetLocalTime();
             TestString = $"Last Updated {DateTime.UtcNow.AddHours(offset).ToLongTimeString()}";
+            if(projects!=null)
+            {
+                await BuildLoad();
 
-            await BuildLoad();
+                await ReleaseLoad();
+            }
 
-            await ReleaseLoad();
-            NumberWaiting = $"Number of Waiting Jobs {CountWaitingJobs()}";
-            NumberOfAgents = $"Number of Running Jobs {CountNumberOfAgents()}";
-            MaxWaitTime = $"Max Wait Time {CalcMaxWaitTime()}";
+            if(BuildRelease!=null) 
+            {
+                NumberWaiting = $"Number of Waiting Jobs {CountWaitingJobs()}";
+                NumberOfAgents = $"Number of Running Jobs {CountNumberOfAgents()}";
+                MaxWaitTime = $"Max Wait Time {CalcMaxWaitTime()}";
+            }
         }
 
         protected string CalcMaxWaitTime()
