@@ -3,13 +3,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace DevOpsAPI
 {
-    public class Program
+    public static class Program
     {
-        protected Program()
-        {
-            
-        }
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
