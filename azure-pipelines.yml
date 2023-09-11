@@ -34,15 +34,6 @@ steps:
         feedsToUse: 'select'
         vstsFeed: '/5c8e1ed1-e471-485a-86ef-195cb54ec214'
 
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'SonarCloud'
-        organization: 'funkysi1701'
-        scannerMode: 'MSBuild'
-        projectKey: 'DevOpsAPI'
-        projectName: 'DevOpsAPI'
-        projectVersion: '$(Build.BuildId)'
-
     - task: DotNetCoreCLI@2.210.0
       displayName: 'Publishing DevOpsAPI App'
       inputs:
@@ -56,22 +47,3 @@ steps:
       inputs:
         PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
         ArtifactName: DevOpsAPI                   
-
-    - task: SonarCloudAnalyze@1
-
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'         
-
-    - task: dependency-checker@1
-      inputs:
-        path: '$(Build.SourcesDirectory)'
-        searchRecursive: true
-        combineProjects: false
-        includePrerelease: false
-        useArtifacts: false
-        createBadge: false
-        createReport: true
-        reportPath: '$(Build.ArtifactStagingDirectory)\dependencies.html'
-      env:
-        SYSTEM_ACCESSTOKEN: $(system.accesstoken)       
