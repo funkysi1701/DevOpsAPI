@@ -32,7 +32,6 @@ steps:
         command: 'restore'
         projects: 'DevOpsAPI/DevOpsAPI.csproj'
         feedsToUse: 'select'
-        vstsFeed: '/5c8e1ed1-e471-485a-86ef-195cb54ec214'
 
     - task: DotNetCoreCLI@2.210.0
       displayName: 'Publishing DevOpsAPI App'
