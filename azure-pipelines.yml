@@ -13,7 +13,13 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
-steps:
+stages:
+
+- stage: Build
+  jobs:
+
+  - job: Build
+    steps:
 
     - task: UseDotNet@2.207.2
       inputs:
@@ -45,4 +51,38 @@ steps:
       displayName: 'Publish DevOpsAPI'
       inputs:
         PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
-        ArtifactName: DevOpsAPI                   
+        ArtifactName: DevOpsAPI
+
+- stage: DevDeploy
+  dependsOn: Build
+  jobs:
+
+  - deployment: deploy
+    environment: 'Dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: IISWebAppManagementOnMachineGroup@0
+            inputs:
+              IISDeploymentType: 'IISWebsite'
+              ActionIISWebsite: 'CreateOrUpdateWebsite'
+              WebsiteName: 'devops.funkysi1701.com'
+              WebsitePhysicalPath: '%SystemDrive%\inetpub\sites\devops.funkysi1701.com'
+              WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+              CreateOrUpdateAppPoolForWebsite: true
+              ConfigureAuthenticationForWebsite: true
+              AppPoolNameForWebsite: 'devops.funkysi1701.com'
+              DotNetVersionForWebsite: 'No Managed Code'
+              PipeLineModeForWebsite: 'Integrated'
+              AppPoolIdentityForWebsite: 'ApplicationPoolIdentity'
+              AnonymousAuthenticationForWebsite: true
+              WindowsAuthenticationForWebsite: false
+
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            inputs:
+              WebSiteName: 'devops.funkysi1701.com'
+              Package: 'C:\agent\_work\1/API/DevOpsAPI.zip'
+              TakeAppOfflineFlag: true
+              XmlVariableSubstitution: true
+              JSONFiles: 'appsettings.json'
