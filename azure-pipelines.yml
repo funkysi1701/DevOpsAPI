@@ -7,18 +7,23 @@ trigger:
     - develop
     - feature/*
 
-pool:
-  vmImage: windows-latest
+pool: windows
 
 variables:
   buildConfiguration: 'Release'
 
-steps:
+stages:
+
+- stage: Build
+  jobs:
+
+  - job: Build
+    steps:
 
     - task: UseDotNet@2.207.2
       inputs:
         packageType: 'sdk'
-        version: '5.x'
+        version: '7.x'
         includePreviewVersions: true
 
     - task: NuGetToolInstaller@1.208.1
@@ -32,7 +37,6 @@ steps:
         command: 'restore'
         projects: 'DevOpsAPI/DevOpsAPI.csproj'
         feedsToUse: 'select'
-        vstsFeed: '/5c8e1ed1-e471-485a-86ef-195cb54ec214'
 
     - task: DotNetCoreCLI@2.210.0
       displayName: 'Publishing DevOpsAPI App'
@@ -42,8 +46,43 @@ steps:
         projects: 'DevOpsAPI/DevOpsAPI.csproj'
         arguments: '--no-restore --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --runtime win-x64 /p:SourceRevisionId=$(Build.SourceVersion)'        
 
-    - task: PublishBuildArtifacts@1.211.0
-      displayName: 'Publish DevOpsAPI'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publishing UI'
       inputs:
-        PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
-        ArtifactName: DevOpsAPI                   
+        targetPath: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
+        artifact: 'DevOpsAPI'
+        publishLocation: 'pipeline'
+
+- stage: DevDeploy
+  dependsOn: Build
+  jobs:
+
+  - deployment: Deploy
+    environment: 'Dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: IISWebAppManagementOnMachineGroup@0
+            inputs:
+              IISDeploymentType: 'IISWebsite'
+              ActionIISWebsite: 'CreateOrUpdateWebsite'
+              WebsiteName: 'devops.funkysi1701.com'
+              WebsitePhysicalPath: '%SystemDrive%\inetpub\sites\devops.funkysi1701.com'
+              WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+              CreateOrUpdateAppPoolForWebsite: true
+              ConfigureAuthenticationForWebsite: true
+              AppPoolNameForWebsite: 'devops.funkysi1701.com'
+              DotNetVersionForWebsite: 'No Managed Code'
+              PipeLineModeForWebsite: 'Integrated'
+              AppPoolIdentityForWebsite: 'ApplicationPoolIdentity'
+              AnonymousAuthenticationForWebsite: true
+              WindowsAuthenticationForWebsite: false
+
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            inputs:
+              WebSiteName: 'devops.funkysi1701.com'
+              Package: 'C:\agent2\_work\1/DevOpsAPI/DevOpsAPI.zip'
+              TakeAppOfflineFlag: true
+              XmlVariableSubstitution: true
+              JSONFiles: 'appsettings.json'
