@@ -53,6 +53,13 @@ stages:
         PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
         ArtifactName: DevOpsAPI
 
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publishing UI'
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
+        artifact: 'DevOpsAPI'
+        publishLocation: 'pipeline'
+
 - stage: DevDeploy
   dependsOn: Build
   jobs:
