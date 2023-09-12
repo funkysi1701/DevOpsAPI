@@ -57,7 +57,7 @@ stages:
   dependsOn: Build
   jobs:
 
-  - deployment: deploy
+  - deployment: Deploy
     environment: 'Dev'
     strategy:
       runOnce:
