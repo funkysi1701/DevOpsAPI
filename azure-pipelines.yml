@@ -83,7 +83,7 @@ stages:
           - task: IISWebAppDeploymentOnMachineGroup@0
             inputs:
               WebSiteName: 'devops.funkysi1701.com'
-              Package: 'C:\agent\_work\1/DevOpsAPI/DevOpsAPI.zip'
+              Package: 'D:\a\1/DevOpsAPI/DevOpsAPI.zip'
               TakeAppOfflineFlag: true
               XmlVariableSubstitution: true
               JSONFiles: 'appsettings.json'
