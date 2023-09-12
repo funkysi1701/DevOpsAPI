@@ -47,12 +47,6 @@ stages:
         projects: 'DevOpsAPI/DevOpsAPI.csproj'
         arguments: '--no-restore --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --runtime win-x64 /p:SourceRevisionId=$(Build.SourceVersion)'        
 
-    - task: PublishBuildArtifacts@1.211.0
-      displayName: 'Publish DevOpsAPI'
-      inputs:
-        PathtoPublish: '$(Pipeline.Workspace)/a/DevOpsAPI.zip'
-        ArtifactName: DevOpsAPI
-
     - task: PublishPipelineArtifact@1
       displayName: 'Publishing UI'
       inputs:
