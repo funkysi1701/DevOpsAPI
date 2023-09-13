@@ -54,14 +54,14 @@ namespace DevOpsAPI.Pages
             }
         }
 
-        protected async Task GetLocalTime()
+        protected void GetLocalTime()
         {
             offset = Config.GetValue<int>("Offset");
         }
 
         protected async Task LoadData()
         {
-            await GetLocalTime();
+            GetLocalTime();
             TestString = $"Last Updated {DateTime.UtcNow.AddHours(offset).ToLongTimeString()}";
             if(projects!=null)
             {
