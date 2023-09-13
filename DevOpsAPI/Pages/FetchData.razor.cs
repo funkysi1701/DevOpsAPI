@@ -56,13 +56,7 @@ namespace DevOpsAPI.Pages
 
         protected async Task GetLocalTime()
         {
-            offset = await GetLocalOffset(JSRuntime);
-            offset = -1 * offset;
-        }
-
-        public async Task<int> GetLocalOffset(IJSRuntime JSRuntime)
-        {
-            return await JSRuntime.InvokeAsync<int>("JsFunctions.offset");
+            offset = Config.GetValue<int>("Offset");
         }
 
         protected async Task LoadData()
