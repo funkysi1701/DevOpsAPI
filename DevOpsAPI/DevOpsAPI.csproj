@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.Common.Contracts" Version="16.205.1" />
     <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.WebApi" Version="16.205.1" />
     <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.205.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="16.205.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="19.225.1" />
     <PackageReference Include="Microsoft.VisualStudio.Services.Release.Client" Version="16.205.1" />
   </ItemGroup>
 
