@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="2.19.0" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.19.0" />
     <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.Common.Contracts" Version="16.205.1" />
-    <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.WebApi" Version="16.205.1" />
+    <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.WebApi" Version="19.225.1" />
     <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.205.1" />
     <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="19.225.1" />
     <PackageReference Include="Microsoft.VisualStudio.Services.Release.Client" Version="16.205.1" />
