@@ -1,4 +1,17 @@
-name: $(BuildDefinitionName)-$(SourceBranchName)$(Rev:.r)-$(date:yyyyMMdd)
+variables:
+  - name: Build.Number.Major
+    value: 8
+  - name: Build.Number.Minor
+    value: 16
+  - name: Build.Number.Sub
+    value: 1    
+  - name: buildConfiguration
+    ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      value: "Release"
+    ${{ if notIn(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      value: "Debug"
+
+name: $(Build.Number.Major).$(Build.Number.Minor).$(Build.Number.Sub).$(Rev:r)
 
 trigger:
   batch: true
@@ -8,9 +21,6 @@ trigger:
     - main
 
 pool: windows
-
-variables:
-  buildConfiguration: 'Release'
 
 stages:
 
