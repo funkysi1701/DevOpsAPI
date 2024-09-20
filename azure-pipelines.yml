@@ -2,7 +2,7 @@ variables:
   - name: Build.Number.Major
     value: 8
   - name: Build.Number.Minor
-    value: 16
+    value: 17
   - name: Build.Number.Sub
     value: 1    
   - name: buildConfiguration
